@@ -234,7 +234,57 @@ void do_cursor(const char *arg1, char *output)
  */
 void do_load(const char *arg1, char *output)
 {
-    snprintf(output, MAX_OUTPUT, "Not implemented.");
+    int rows = 0;
+    int columns = 0;
+    char filename[] = {arg1};
+    char buffer[BSIZE];
+    FILE *f;
+    char *field;
+    int Intake;
+    char Cluster, Type;
+    float Percentage;
+    f = fopen(arg1, "r");
+    if (f == NULL)
+    {
+        printf("Unable to open file '%s'\n", filename);
+        exit(1);
+    }
+    /* process the data */
+    /* the file contains 4 fields in a specific order:
+        cluster,intake,blank,percentage
+       separated by commas */
+    while (fgets(buffer, BSIZE, f))
+    {
+        /* get Cluster */
+        field = strtok(buffer, ",");
+        char Cluster[MAX_INPUT];
+        strcpy(Cluster, field);
+        /* get Intake */
+        field = strtok(NULL, ",");
+        char Intake[MAX_INPUT];
+        strcpy(Intake, field);
+        /* get Type */
+        field = strtok(NULL, ",");
+        char Type[MAX_INPUT];
+        strcpy(Type, field);
+        /* get Percentage */
+        field = strtok(NULL, ",");
+        char Percentage[MAX_INPUT];
+        strcpy(Percentage, field);
+
+        /* display the result in the proper format */
+
+        printf(" %s, %s ,%s ,%s",
+
+               Cluster,
+               Intake,
+               Type,
+               Percentage);
+    }
+
+    /* close file */
+    fclose(f);
+    snprintf(output, MAX_OUTPUT, "\n Loaded CSV file successfuly, ");
 }
 
 /*
@@ -290,7 +340,31 @@ void do_prec(const char *arg1, char *output)
  */
 void do_save(const char *arg1, char *output)
 {
-    snprintf(output, MAX_OUTPUT, "Not implemented.");
+    if (viewport_get_worksheet() == NULL)
+    {
+        snprintf(output,MAX_OUTPUT, "Worksheet not found");
+        return;
+    }
+
+    if (arg1 == NULL)
+    {
+        snprintf(output, MAX_OUTPUT, "No input detected");
+        return;
+    }
+
+    strcat(arg1, ".csv");
+    FILE *fp = fopen(arg1, "w");
+
+    int i = ws_write_csv(viewport_get_worksheet(), fp);
+
+    if (i < 0)
+    {
+        snprintf(output, MAX_OUTPUT, "Error in creating");
+    }
+    else
+    {
+        snprintf(output, MAX_OUTPUT, "File created, %d rows created", i);
+    }
 }
 
 /*

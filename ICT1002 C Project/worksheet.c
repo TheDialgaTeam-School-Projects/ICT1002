@@ -282,7 +282,35 @@ void ws_set(WORKSHEET *ws, int col, int row, const char *value)
  */
 int ws_write_csv(WORKSHEET *ws, FILE *f)
 {
-    return 0;
+    int counter = 0;
+
+    if (ws == NULL || f == NULL)
+    {
+        return -1;
+    }
+
+    for (int rows = 0; rows < ws->rows; rows++)
+    {
+        counter++;
+        if (rows != 0)
+        {
+            fprintf(f, "\n");
+        }
+        for (int column = 0; column < ws->cols; column++)
+        {
+            if (ws_guess_data_type(ws->sheet[rows][column]) > 0)
+            {
+                char *text = ws->sheet[rows][column];
+                if (column == ws->cols - 1)
+                    fprintf(f, "%s", text);
+                else
+                    fprintf(f, "%s,", text);
+            }
+        }
+    }
+
+    fclose(f);
+    return counter;
 }
 
 /**

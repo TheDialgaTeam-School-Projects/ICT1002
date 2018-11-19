@@ -40,6 +40,8 @@
 /* integer max buffer */
 #define INTEGER_MAX_BUFF (sizeof(int) * 8 + 1)
 
+#define BSIZE 800
+
 /* a structure for representing a worksheet */
 typedef struct
 {
